@@ -4,8 +4,8 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using SpotifyRandomPlaylist.UserNS;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace SpotifyRandomPlaylist
 {
@@ -24,7 +24,7 @@ namespace SpotifyRandomPlaylist
         
         public string GetRandomSong()
         {
-            string randomId = GetRandomId(3);
+            string randomId = GetRandomId(6);
             HttpResponseMessage response = _client.GetAsync($"search?q={randomId}&type=track&limit=1").Result;
             if (response.IsSuccessStatusCode)
             {
@@ -60,6 +60,49 @@ namespace SpotifyRandomPlaylist
             {
                 User? user = JsonSerializer.Deserialize<User>(response.Content.ReadAsStringAsync().Result);
                 return user!;
+            }
+            else
+            {
+                throw new Exception($"Error: {response.StatusCode} {response.ReasonPhrase}");
+            }
+        }
+        public void CreateAndPopulatePlaylist(User user, List<string> songIds)
+        {
+            string playlistId = CreatePlaylist(user);
+            PopulatePlaylist(playlistId, songIds);
+        }
+        private string CreatePlaylist(User user)
+        {
+            string url = $"users/{user.id}/playlists";
+            var content = new Dictionary<string, string>
+            {
+                {"name", "Random Playlist"}
+            };
+            var stringContent = new StringContent(JsonSerializer.Serialize(content), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = _client.PostAsync(url, stringContent).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                Playlist? playlist = JsonSerializer.Deserialize<Playlist>(response.Content.ReadAsStringAsync().Result);
+                return playlist!.id;
+            }
+            else
+            {
+                throw new Exception($"Error: {response.StatusCode} {response.ReasonPhrase}");
+            }
+        }
+        public void PopulatePlaylist(string playlistId, List<string> songIds)
+        {
+            string url = $"playlists/{playlistId}/tracks";
+            PlaylistCreate playlistCreate = new PlaylistCreate();
+            foreach(var songId in songIds)
+            {
+                playlistCreate.uris.Add("spotify:track:" + songId);
+            }
+            var stringContent = new StringContent(JsonSerializer.Serialize(playlistCreate), Encoding.UTF8, "application/json");
+            var response = _client.PostAsync(url, stringContent).Result;
+            if(response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Playlist created and populated");
             }
             else
             {

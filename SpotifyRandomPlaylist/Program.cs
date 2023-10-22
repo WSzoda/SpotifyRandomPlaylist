@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SpotifyRandomPlaylist;
-using SpotifyRandomPlaylist.UserNS;
 
 var builder = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
@@ -26,5 +25,4 @@ for(int i = 0; i < 10; i++)
     songIds.Add(spotifyHandler.GetRandomSong());
 }
 User user = spotifyHandler.GetUser();
-
-Console.WriteLine(user.id);
+spotifyHandler.CreateAndPopulatePlaylist(user, songIds);

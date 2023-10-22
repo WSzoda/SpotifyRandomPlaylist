@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpotifyRandomPlaylist.UserNS
+namespace SpotifyRandomPlaylist
 {
 
     public class User
@@ -29,22 +29,9 @@ namespace SpotifyRandomPlaylist.UserNS
         public bool filter_locked { get; set; }
     }
 
-    public class External_Urls
-    {
-        public string spotify { get; set; }
-    }
-
     public class Followers
     {
         public string href { get; set; }
         public int total { get; set; }
     }
-
-    public class Image
-    {
-        public string url { get; set; }
-        public int height { get; set; }
-        public int width { get; set; }
-    }
-
 }
