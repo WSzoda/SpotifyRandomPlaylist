@@ -17,27 +17,16 @@ namespace SpotifyRandomPlaylist
 
         public static Token Authorize(string ClientId, string ClientSecret)
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("https://accounts.spotify.com/api/token");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ClientId}:{ClientSecret}")));
-
-            FormUrlEncodedContent content = new FormUrlEncodedContent(new Dictionary<string, string>()
-            {
-                { "grant_type", "client_credentials" }
-            });
-            HttpResponseMessage response = client.PostAsync("", content).Result;
-
-            if (response.IsSuccessStatusCode)
-            {
-                Token? token = JsonSerializer.Deserialize<Token>(response.Content.ReadAsStringAsync().Result);
-                client.Dispose();
-                return token!;
-            }
-            else
-            {
-                client.Dispose();
-                throw new Exception($"Error: {response.StatusCode} {response.ReasonPhrase}");
-            }
+            string url = $"https://accounts.spotify.com/authorize?response_type=token&client_id={ClientId}&redirect_uri=http%3A%2F%2Flocalhost%3A5543%2Fcallback&scope=playlist-modify-public%20playlist-modify-private%20playlist-read-private%20user-read-private";
+            Console.WriteLine(url);
+            Console.WriteLine("Paste the url you were redirected to:");
+            string urlResult = Console.ReadLine();
+            string token = urlResult.Split("access_token=")[1].Split("&")[0];
+            Token tokenObject = new Token();
+            tokenObject.access_token = token;
+            tokenObject.token_type = "Bearer";
+            tokenObject.expires_in = 3600;
+            return tokenObject;
         }
     }
 }

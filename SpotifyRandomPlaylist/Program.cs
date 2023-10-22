@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SpotifyRandomPlaylist;
+using SpotifyRandomPlaylist.UserNS;
 
 var builder = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
@@ -26,4 +27,4 @@ for(int i = 0; i < 10; i++)
 }
 User user = spotifyHandler.GetUser();
 
-Console.WriteLine(token.token_type);
+Console.WriteLine(user.id);

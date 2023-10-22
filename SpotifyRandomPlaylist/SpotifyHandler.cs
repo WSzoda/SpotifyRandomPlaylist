@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using SpotifyRandomPlaylist.UserNS;
 using System.Threading.Tasks;
 
 namespace SpotifyRandomPlaylist
@@ -18,13 +19,13 @@ namespace SpotifyRandomPlaylist
         {
             _token = token;
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token.access_token);
+            _client.BaseAddress = new Uri("https://api.spotify.com/v1/");
         }
         
         public string GetRandomSong()
         {
             string randomId = GetRandomId(3);
-            _client.BaseAddress = new Uri($"https://api.spotify.com/v1/search?q={randomId}&type=track&limit=1");
-            HttpResponseMessage response = _client.GetAsync("").Result;
+            HttpResponseMessage response = _client.GetAsync($"search?q={randomId}&type=track&limit=1").Result;
             if (response.IsSuccessStatusCode)
             {
                 Search? rootobject = JsonSerializer.Deserialize<Search>(response.Content.ReadAsStringAsync().Result);
@@ -54,8 +55,7 @@ namespace SpotifyRandomPlaylist
         }
         public User GetUser()
         {
-            _client.BaseAddress = new Uri("https://api.spotify.com/v1/me");
-            HttpResponseMessage response = _client.GetAsync("").Result;
+            HttpResponseMessage response = _client.GetAsync("me").Result;
             if (response.IsSuccessStatusCode)
             {
                 User? user = JsonSerializer.Deserialize<User>(response.Content.ReadAsStringAsync().Result);
