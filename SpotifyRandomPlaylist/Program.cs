@@ -16,4 +16,5 @@ if(ClientId == "" ||  ClientSecret == "")
     return;
 }
 
-string token = SpotifyHandler.Authorize(ClientId, ClientSecret);
+Token token = SpotifyHandler.Authorize(ClientId, ClientSecret);
+Console.WriteLine(token.token_type);
