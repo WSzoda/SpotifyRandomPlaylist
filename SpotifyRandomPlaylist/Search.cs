@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SpotifyRandomPlaylist
 {
 
-    public class Rootobject
+    public class Search
     {
         public Tracks tracks { get; set; }
     }

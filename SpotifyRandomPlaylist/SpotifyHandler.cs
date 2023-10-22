@@ -8,26 +8,61 @@ using System.Threading.Tasks;
 
 namespace SpotifyRandomPlaylist
 {
-    internal static class SpotifyHandler
+    internal class SpotifyHandler
     {
-        public static Token Authorize(string ClientId, string ClientSecret)
+        private readonly Token _token;
+        private readonly Random _random = new Random();
+        private readonly HttpClient _client = new HttpClient();
+
+        public SpotifyHandler(Token token)
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("https://accounts.spotify.com/api/token");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{ClientId}:{ClientSecret}")));
-            FormUrlEncodedContent content = new FormUrlEncodedContent(new Dictionary<string, string>()
-            {
-                { "grant_type", "client_credentials" }
-            });
-            HttpResponseMessage response = client.PostAsync("", content).Result;
+            _token = token;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token.access_token);
+        }
+        
+        public string GetRandomSong()
+        {
+            string randomId = GetRandomId(3);
+            _client.BaseAddress = new Uri($"https://api.spotify.com/v1/search?q={randomId}&type=track&limit=1");
+            HttpResponseMessage response = _client.GetAsync("").Result;
             if (response.IsSuccessStatusCode)
             {
-                Token? token = JsonSerializer.Deserialize<Token>(response.Content.ReadAsStringAsync().Result);
-                return token!;
+                Search? rootobject = JsonSerializer.Deserialize<Search>(response.Content.ReadAsStringAsync().Result);
+                if (rootobject!.tracks.items.Length > 0)
+                {
+                    return rootobject.tracks.items[0].id;
+                }
+                else
+                {
+                    return GetRandomSong();
+                }
             }
             else
             {
-                client.Dispose();
+                throw new Exception($"Error: {response.StatusCode} {response.ReasonPhrase}");
+            }
+        }
+        private string GetRandomId(int length)
+        {
+            string randomId = "";
+            string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            for (int i = 0; i < length; i++)
+            {
+                randomId += characters[_random.Next(characters.Length)];
+            }
+            return randomId;
+        }
+        public User GetUser()
+        {
+            _client.BaseAddress = new Uri("https://api.spotify.com/v1/me");
+            HttpResponseMessage response = _client.GetAsync("").Result;
+            if (response.IsSuccessStatusCode)
+            {
+                User? user = JsonSerializer.Deserialize<User>(response.Content.ReadAsStringAsync().Result);
+                return user!;
+            }
+            else
+            {
                 throw new Exception($"Error: {response.StatusCode} {response.ReasonPhrase}");
             }
         }

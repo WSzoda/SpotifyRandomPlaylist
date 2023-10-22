@@ -16,5 +16,14 @@ if(ClientId == "" ||  ClientSecret == "")
     return;
 }
 
-Token token = SpotifyHandler.Authorize(ClientId, ClientSecret);
+Token token = Token.Authorize(ClientId, ClientSecret);
+SpotifyHandler spotifyHandler = new SpotifyHandler(token);
+
+List<string> songIds = new List<string>();
+for(int i = 0; i < 10; i++)
+{
+    songIds.Add(spotifyHandler.GetRandomSong());
+}
+User user = spotifyHandler.GetUser();
+
 Console.WriteLine(token.token_type);
