@@ -1,5 +1,19 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Microsoft.Extensions.Configuration;
+using SpotifyRandomPlaylist;
 
-HttpClient client = new HttpClient();
-client.BaseAddress = new Uri("https://accounts.spotify.com/api/token");
+var builder = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("config.json", optional: false);
+
+IConfiguration configuration = builder.Build();
+
+string ClientId = configuration.GetValue<string>("ClientId")!;
+string ClientSecret = configuration.GetValue<string>("ClientSecret")!;
+
+if(ClientId == "" ||  ClientSecret == "")
+{
+    Console.WriteLine("Missing ClientId or ClientSecret");
+    return;
+}
+
+string token = SpotifyHandler.Authorize(ClientId, ClientSecret);
