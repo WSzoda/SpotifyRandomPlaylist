@@ -17,10 +17,12 @@ Configuration
 Before running the program, you need to configure the connection to spotify. Create app in Spotify Developer dashboard. Create copy file named config.json and paste config from below.
 ```
 {
-  "ClientId": ""
+  "ClientId": "",
+  "ClientSecret": "",
+  "RedirectUri": ""
 }
 ```
-Replace the placeholder values with your specific ClientId.
+Replace the placeholder values with your specific ClientId, ClientSecret and RedirectUri from Spotify dashboard.
 
 Usage
 After configuring the config.json file, you can run the program using the following command:
