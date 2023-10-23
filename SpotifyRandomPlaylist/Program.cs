@@ -8,15 +8,14 @@ var builder = new ConfigurationBuilder()
 IConfiguration configuration = builder.Build();
 
 string ClientId = configuration.GetValue<string>("ClientId")!;
-string ClientSecret = configuration.GetValue<string>("ClientSecret")!;
 
-if(ClientId == "" ||  ClientSecret == "")
+if(ClientId == "")
 {
     Console.WriteLine("Missing ClientId or ClientSecret");
     return;
 }
 
-Token token = Token.Authorize(ClientId, ClientSecret);
+Token token = Token.Authorize(ClientId);
 SpotifyHandler spotifyHandler = new SpotifyHandler(token);
 
 List<string> songIds = new List<string>();
