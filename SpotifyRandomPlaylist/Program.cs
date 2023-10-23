@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SpotifyRandomPlaylist;
+using SpotifyRandomPlaylist.Data;
 
 var builder = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
@@ -8,11 +9,12 @@ var builder = new ConfigurationBuilder()
 IConfiguration configuration = builder.Build();
 
 string ClientId = configuration.GetValue<string>("ClientId")!;
-string ClientSecret = configuration.GetValue<string>("ClientSecret")!;
+string ClientSecret = configuration.GetValue<string>("ClientSeret")!;
+string RedirectUri = configuration.GetValue<string>("RedirectUri")!;
 
-if(ClientId == "" ||  ClientSecret == "")
+if (ClientId == "" ||  ClientSecret == "" || RedirectUri == "")
 {
-    Console.WriteLine("Missing ClientId or ClientSecret");
+    Console.WriteLine("Missing ClientId or ClientSecret or RedirectUri");
     return;
 }
 
